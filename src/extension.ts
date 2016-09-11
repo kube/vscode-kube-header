@@ -1,3 +1,13 @@
+
+      /*#######.
+     ########",#:
+   #########',##".
+  ##'##'## .##',##.
+   ## ## ## # ##",#.
+    ## ## ## ## ##'
+     ## ## ## :##
+      ## ## ##*/
+
 'use strict'
 import * as vscode from 'vscode'
 import { ExtensionContext, TextEdit, Position } from 'vscode'
