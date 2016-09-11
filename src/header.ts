@@ -82,6 +82,7 @@ const headers = {
   'fsharp': parensHeader,
   'go': hashHeader,
   'groovy': slashHeader,
+  'ini': semicolonHeader,
   'jade': slashHeader,
   'java': slashHeader,
   'javascript': slashHeader,
