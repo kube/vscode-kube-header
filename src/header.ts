@@ -91,6 +91,7 @@ const headers = {
   'lua': semicolonHeader,
   'makefile': hashHeader,
   'objective-c': slashHeader,
+  'ocaml': parensHeader,
   'perl': hashHeader,
   'perl6': hashHeader,
   'php': slashHeader,
