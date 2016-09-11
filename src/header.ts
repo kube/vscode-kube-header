@@ -60,6 +60,19 @@ const parensHeader =
 
 `
 
+const dashHeader =
+  `
+      --------,
+     -------- --
+   --------- -- -,
+  -- -- -- .--- --.
+   -- -- -- - -- --.
+    -- -- -- -- --'
+     -- -- -- .--
+      -- -- ---'
+
+`
+
 const percentHeader =
   `
       %%%%%%%%%.
@@ -82,6 +95,7 @@ const headers = {
   'fsharp': parensHeader,
   'go': hashHeader,
   'groovy': slashHeader,
+  'haskell': dashHeader,
   'ini': semicolonHeader,
   'jade': slashHeader,
   'java': slashHeader,
