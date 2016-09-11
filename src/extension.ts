@@ -20,13 +20,14 @@ export function activate(context: vscode.ExtensionContext) {
       let activeTextEditor = vscode.window.activeTextEditor
 
       activeTextEditor.edit(editor => {
-        let languageHeader = getHeader(activeTextEditor.document.languageId)
+        let languageId = activeTextEditor.document.languageId
+        let languageHeader = getHeader(languageId)
 
         if (languageHeader)
           editor.insert(new Position(0, 0), languageHeader)
         else
           vscode.window.showInformationMessage(
-            'No header found for current file language')
+            `No header found for language ${languageId}`)
       })
     })
 
