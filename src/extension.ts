@@ -26,9 +26,14 @@ export function activate(context: vscode.ExtensionContext) {
 
         // If found header for current language
         if (languageHeader) {
-          // Update header in case broken by code formatter
-          if (startsWithHeader(document.getText()))
-            editor.replace(new Range(0, 0, 10, 0), languageHeader)
+          let headerAtTop = startsWithHeader(document.getText())
+
+          if (headerAtTop) {
+            // Update header in case broken by code formatter
+            // Header height can vary if code formatter removed first line
+            let headerHeight = headerAtTop[0].split('\n').length - 1
+            editor.replace(new Range(0, 0, headerHeight, 0), languageHeader)
+          }
           else
             editor.insert(new Position(0, 0), languageHeader)
         }
