@@ -16,7 +16,7 @@ import { startsWithHeader, getHeader } from './header'
 export function activate(context: vscode.ExtensionContext) {
 
   let disposable = vscode.commands
-    .registerCommand('extension.insertHeader', () => {
+    .registerTextEditorCommand('extension.insertHeader', () => {
       let activeTextEditor = vscode.window.activeTextEditor
 
       activeTextEditor.edit(editor => {
