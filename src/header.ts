@@ -93,7 +93,7 @@ const headers = {
   'css': slashHeader,
   'dockerfile': hashHeader,
   'fsharp': parensHeader,
-  'go': hashHeader,
+  'go': slashHeader,
   'groovy': slashHeader,
   'haskell': dashHeader,
   'ini': semicolonHeader,
