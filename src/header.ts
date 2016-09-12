@@ -125,9 +125,19 @@ const headers = {
   'yaml': hashHeader
 }
 
+/**
+ * Get header corresponding to languageId
+ */
 export const getHeader = (language: string) => headers[language]
 
-export const startsWithHeader = (text: string) => {
-  const headerRegex = /^\s*\n\s*(\/\*|\(\*|#|%|-|;)([#%;"'.,:;/`\- ]*\n){7}[#%;"'.,:;/`\- ]*(\*\/|\*\))?\s*\n/
-  return headerRegex.test(text)
-}
+/**
+ * Regex to verify that current text begins by a header
+ * Matches all kinds of header even if broken by code-formatter
+ */
+const headerRegex = /^(\s*\n)?\s*(\/\*|\(\*|#|%|-|;)([#%;"'.,:;/`\- ]*\n){7}[#%;"'.,:;/`\- ]*(\*\/|\*\))?\s*\n/
+
+/**
+ * Check that current text begins with a header
+ * Matches all kinds of header even if broken by code-formatter
+ */
+export const startsWithHeader = (text: string) => text.match(headerRegex)
