@@ -10,8 +10,8 @@
 
 'use strict'
 import * as vscode from 'vscode'
-import { ExtensionContext, TextEdit, Position } from 'vscode'
-import { getHeader } from './header'
+import { ExtensionContext, TextEdit, Position, Range } from 'vscode'
+import { startsWithHeader, getHeader } from './header'
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -20,11 +20,18 @@ export function activate(context: vscode.ExtensionContext) {
       let activeTextEditor = vscode.window.activeTextEditor
 
       activeTextEditor.edit(editor => {
-        let languageId = activeTextEditor.document.languageId
+        let document = activeTextEditor.document
+        let languageId = document.languageId
         let languageHeader = getHeader(languageId)
 
-        if (languageHeader)
-          editor.insert(new Position(0, 0), languageHeader)
+        // If found header for current language
+        if (languageHeader) {
+          // Update header in case broken by code formatter
+          if (startsWithHeader(document.getText()))
+            editor.replace(new Range(0, 0, 10, 0), languageHeader)
+          else
+            editor.insert(new Position(0, 0), languageHeader)
+        }
         else
           vscode.window.showInformationMessage(
             `No header found for language ${languageId}`)

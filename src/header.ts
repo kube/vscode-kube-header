@@ -126,3 +126,8 @@ const headers = {
 }
 
 export const getHeader = (language: string) => headers[language]
+
+export const startsWithHeader = (text: string) => {
+  const headerRegex = /^\s*\n\s*(\/\*|\(\*|#|%|-|;)([#%;"'.,:;/`\- ]*\n){7}[#%;"'.,:;/`\- ]*(\*\/|\*\))?\s*\n/
+  return headerRegex.test(text)
+}
