@@ -137,7 +137,7 @@ export const getHeader = (language: string) => headers[language]
 const headerRegex = /^(\s*\n)?\s*(\/\*|\(\*|#|%|-|;)([#%;"'.,:;/`\- ]*\n){7}[#%;"'.,:;/`\- ]*(\*\/|\*\))?\s*\n/
 
 /**
- * Check that current text begins with a header
+ * Get current header in text if already present
  * Matches all kinds of header even if broken by code-formatter
  */
-export const startsWithHeader = (text: string) => text.match(headerRegex)
+export const startsWithHeader = (text: string) => text.match(headerRegex)[0]
