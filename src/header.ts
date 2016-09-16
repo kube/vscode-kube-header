@@ -140,4 +140,7 @@ const headerRegex = /^(\s*\n)?\s*(\/\*|\(\*|#|%|-|;)([#%;"'.,:;/`\- ]*\n){7}[#%;
  * Get current header in text if already present
  * Matches all kinds of header even if broken by code-formatter
  */
-export const startsWithHeader = (text: string) => text.match(headerRegex)[0]
+export const startsWithHeader = (text: string) => {
+  let regexMatches = text.match(headerRegex)
+  return regexMatches ? regexMatches[0] : null
+}

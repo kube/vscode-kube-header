@@ -58,11 +58,49 @@ function insertHeaderHandler() {
       `No header found for language ${languageId}`)
 }
 
+/**
+ * Start watcher for document save to update current header
+ * if broken by code-formatter
+ */
+function startHeaderUpdateOnSaveWatcher(subscriptions) {
+  const ignoreNextSave = new WeakSet()
+
+  // Here we use the trick from Luke Hoban Go Extension,
+  // But this will cause an infinite loop if another extension that
+  // uses the same technique is active.
+  // And it's really ugly.
+  vscode.workspace.onDidSaveTextDocument(document => {
+    let textEditor = vscode.window.activeTextEditor
+
+    if (textEditor.document === document
+      && !ignoreNextSave.has(document)) {
+      let languageHeader = getHeader(document.languageId)
+      let currentHeader = startsWithHeader(document.getText())
+
+      // If found header for current language
+      // and a header is present at top of document
+      if (languageHeader && currentHeader) {
+        textEditor.edit(editor =>
+          replaceHeader(editor, currentHeader, languageHeader))
+          .then(applied => {
+            ignoreNextSave.add(document)
+            return document.save()
+          })
+          .then(() => {
+            ignoreNextSave.delete(document)
+          }, err => { })
+      }
+    }
+  }, null, subscriptions)
+}
+
+
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands
     .registerTextEditorCommand('extension.insertHeader', insertHeaderHandler)
 
   context.subscriptions.push(disposable)
+  startHeaderUpdateOnSaveWatcher(context.subscriptions)
 }
 
 export function deactivate() {
