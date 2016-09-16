@@ -13,7 +13,7 @@ import * as vscode from 'vscode'
 import {
   ExtensionContext, TextEdit, TextEditorEdit, TextDocument, Position, Range
 } from 'vscode'
-import { startsWithHeader, getHeader } from './header'
+import { getHeaderAtStart, getHeader } from './header'
 
 /**
  * Update header in document in case broken by code formatter
@@ -45,7 +45,7 @@ function insertHeaderHandler() {
   // If found header for current language
   if (languageHeader) {
     activeTextEditor.edit(editor => {
-      let currentHeader = startsWithHeader(document.getText())
+      let currentHeader = getHeaderAtStart(document.getText())
 
       if (currentHeader)
         replaceHeader(editor, currentHeader, languageHeader)
@@ -75,7 +75,7 @@ function startHeaderUpdateOnSaveWatcher(subscriptions) {
     if (textEditor.document === document
       && !ignoreNextSave.has(document)) {
       let languageHeader = getHeader(document.languageId)
-      let currentHeader = startsWithHeader(document.getText())
+      let currentHeader = getHeaderAtStart(document.getText())
 
       // If found header for current language
       // and a header is present at top of document
@@ -97,7 +97,7 @@ function startHeaderUpdateOnSaveWatcher(subscriptions) {
 
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands
-    .registerTextEditorCommand('extension.insertHeader', insertHeaderHandler)
+    .registerTextEditorCommand('kube.insertHeader', insertHeaderHandler)
 
   context.subscriptions.push(disposable)
   startHeaderUpdateOnSaveWatcher(context.subscriptions)

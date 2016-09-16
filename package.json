@@ -18,14 +18,14 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.insertHeader",
+        "command": "kube.insertHeader",
         "title": "Insert Kube Header",
         "when": "editorTextFocus"
       }
     ],
     "keybindings": [
       {
-        "command": "extension.insertHeader",
+        "command": "kube.insertHeader",
         "key": "ctrl+alt+k",
         "mac": "cmd+alt+k",
         "when": "editorTextFocus"
