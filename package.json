@@ -5,6 +5,7 @@
   "version": "0.0.1",
   "publisher": "kube",
   "license": "MIT",
+  "icon": "kube.png",
   "engines": {
     "vscode": "^1.4.0"
   },
