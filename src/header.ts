@@ -8,8 +8,8 @@
      ## ## ## :##
       ## ## ##*/
 
-const hashHeader =
-  `
+const headers = {
+  hash: `
       #########.
      ########",#:
    #########',##".
@@ -19,10 +19,8 @@ const hashHeader =
      ## ## ## :##
       ## ## ##."
 
-`
-
-const slashHeader =
-  `
+`,
+  slash: `
       /*#######.
      ########",#:
    #########',##".
@@ -32,10 +30,8 @@ const slashHeader =
      ## ## ## :##
       ## ## ##*/
 
-`
-
-const semicolonHeader =
-  `
+`,
+  semicolon: `
       ;;;;;;;;;.
      ;;;;;;;;',;:
    ;;;;;;;;;',;;".
@@ -45,10 +41,8 @@ const semicolonHeader =
      ;; ;; ;; :;;
       ;; ;; ;;.'
 
-`
-
-const parensHeader =
-  `
+`,
+  parens: `
       (*#######.
      ########",#:
    #########',##".
@@ -58,10 +52,8 @@ const parensHeader =
      ## ## ## :##
       ## ## ##*)
 
-`
-
-const dashHeader =
-  `
+`,
+  dash: `
       --------,
      -------- --
    --------- -- -,
@@ -71,10 +63,8 @@ const dashHeader =
      -- -- -- .--
       -- -- ---'
 
-`
-
-const percentHeader =
-  `
+`,
+  percent: `
       %%%%%%%%%.
      %%%%%%%%",%:
    %%%%%%%%%',%%".
@@ -85,62 +75,63 @@ const percentHeader =
       %% %% %%."
 
 `
-
-export type SupportedLanguage = keyof typeof headers
-
-const headers = {
-  'c': slashHeader,
-  'coffeescript': hashHeader,
-  'cpp': slashHeader,
-  'css': slashHeader,
-  'dockerfile': hashHeader,
-  'erlang': percentHeader,
-  'fsharp': parensHeader,
-  'go': slashHeader,
-  'groovy': slashHeader,
-  'haskell': dashHeader,
-  'ini': semicolonHeader,
-  'jade': slashHeader,
-  'java': slashHeader,
-  'javascript': slashHeader,
-  'javascriptreact': slashHeader,
-  'latex': percentHeader,
-  'less': slashHeader,
-  'lua': semicolonHeader,
-  'makefile': hashHeader,
-  'matlab': percentHeader,
-  'objective-c': slashHeader,
-  'ocaml': parensHeader,
-  'perl': hashHeader,
-  'perl6': hashHeader,
-  'php': slashHeader,
-  'plaintext': hashHeader,
-  'powershell': hashHeader,
-  'python': hashHeader,
-  'r': hashHeader,
-  'ruby': hashHeader,
-  'rust': slashHeader,
-  'scss': slashHeader,
-  'shellscript': hashHeader,
-  'sql': hashHeader,
-  'swift': slashHeader,
-  'typescript': slashHeader,
-  'typescriptreact': slashHeader,
-  'xsl': slashHeader,
-  'yaml': hashHeader
 }
+
+const languageHeaders = {
+  'c': headers.slash,
+  'coffeescript': headers.hash,
+  'cpp': headers.slash,
+  'css': headers.slash,
+  'dockerfile': headers.hash,
+  'erlang': headers.percent,
+  'fsharp': headers.parens,
+  'go': headers.slash,
+  'groovy': headers.slash,
+  'haskell': headers.dash,
+  'ini': headers.semicolon,
+  'jade': headers.slash,
+  'java': headers.slash,
+  'javascript': headers.slash,
+  'javascriptreact': headers.slash,
+  'latex': headers.percent,
+  'less': headers.slash,
+  'lua': headers.semicolon,
+  'makefile': headers.hash,
+  'matlab': headers.percent,
+  'objective-c': headers.slash,
+  'ocaml': headers.parens,
+  'perl': headers.hash,
+  'perl6': headers.hash,
+  'php': headers.slash,
+  'plaintext': headers.hash,
+  'powershell': headers.hash,
+  'python': headers.hash,
+  'r': headers.hash,
+  'ruby': headers.hash,
+  'rust': headers.slash,
+  'scss': headers.slash,
+  'shellscript': headers.hash,
+  'sql': headers.hash,
+  'swift': headers.slash,
+  'typescript': headers.slash,
+  'typescriptreact': headers.slash,
+  'xsl': headers.slash,
+  'yaml': headers.hash
+}
+
+export type SupportedLanguage = keyof typeof languageHeaders
 
 /**
  * Check if language is supported
  */
 export const isSupportedLanguage = (lang: string): lang is SupportedLanguage =>
-  lang in headers
+  lang in languageHeaders
 
 /**
  * Get header corresponding to languageId
  */
 export const getHeader = (language: SupportedLanguage) =>
-  headers[language]
+  languageHeaders[language]
 
 /**
  * Regex to verify that current text begins by a header
