@@ -8,100 +8,81 @@
      ## ## ## :##
       ## ## ##*/
 
-'use strict'
 import * as vscode from 'vscode'
-import {
-  ExtensionContext, TextEdit, TextEditorEdit, TextDocument, Position, Range
-} from 'vscode'
-import { getHeaderAtStart, getHeader } from './header'
+import { WorkspaceEdit, TextEdit, Position, Range } from 'vscode'
+import { isSupportedLanguage, SupportedLanguage, extractHeader, getHeader } from './header'
 
 /**
- * Update header in document in case broken by code formatter
+ * Returns the number of lines of a header.
+ * Header height can vary if code formatter removed first line
  */
-function replaceHeader(editor: TextEditorEdit,
-  currentHeader: string, header: string) {
-  // Header height can vary if code formatter removed first line
-  let headerHeight = currentHeader.split('\n').length - 1
-
-  editor.replace(new Range(0, 0, headerHeight, 0), header)
-}
+const getHeaderHeight = (header: string) =>
+  header.split('\n').length - 1
 
 /**
  * Insert a new header at top of document
  */
-function insertHeader(editor: TextEditorEdit, header: string) {
-  editor.insert(new Position(0, 0), header)
-}
+const insertHeader = (language: SupportedLanguage) =>
+  TextEdit.insert(
+    new Position(0, 0),
+    getHeader(language)
+  )
 
 /**
- * `insertHeader` Command Handler
+ * Update header in document in case broken by code formatter
  */
-function insertHeaderHandler() {
-  let activeTextEditor = vscode.window.activeTextEditor
-  let document = activeTextEditor.document
-  let languageId = document.languageId
-  let languageHeader = getHeader(languageId)
+const replaceHeader = (currentHeader: string, language: SupportedLanguage) =>
+  TextEdit.replace(
+    new Range(0, 0, getHeaderHeight(currentHeader), 0),
+    getHeader(language)
+  )
 
-  // If found header for current language
-  if (languageHeader) {
-    activeTextEditor.edit(editor => {
-      let currentHeader = getHeaderAtStart(document.getText())
+/**
+ * Header Insertion Command Handler
+ */
+const insertHeaderHandler = ({ document }: vscode.TextEditor) => {
+  if (isSupportedLanguage(document.languageId)) {
+    const currentHeader = extractHeader(document.getText())
+    const workspaceEdit = new WorkspaceEdit()
 
-      if (currentHeader)
-        replaceHeader(editor, currentHeader, languageHeader)
-      else
-        insertHeader(editor, languageHeader)
-    })
+    workspaceEdit.set(document.uri, [
+      currentHeader
+        ? replaceHeader(currentHeader, document.languageId)
+        : insertHeader(document.languageId)
+    ])
+
+    vscode.workspace.applyEdit(workspaceEdit)
   }
   else
     vscode.window.showInformationMessage(
-      `No header found for language ${languageId}`)
+      `No header found for language ${document.languageId}`
+    )
 }
 
 /**
- * Start watcher for document save to update current header
- * if broken by code-formatter
+ * Header Formatting Provider.
+ * Fixes header in case broken by previous formatters.
  */
-function startHeaderUpdateOnSaveWatcher(subscriptions) {
-  const ignoreNextSave = new WeakSet()
+const formattingEditProvider: vscode.DocumentFormattingEditProvider = {
+  provideDocumentFormattingEdits(document) {
+    const currentHeader = extractHeader(document.getText())
 
-  // Here we use the trick from Luke Hoban Go Extension,
-  // But this will cause an infinite loop if another extension that
-  // uses the same technique is active.
-  // And it's really ugly.
-  vscode.workspace.onDidSaveTextDocument(document => {
-    let textEditor = vscode.window.activeTextEditor
-
-    if (textEditor.document === document
-      && !ignoreNextSave.has(document)) {
-      let languageHeader = getHeader(document.languageId)
-      let currentHeader = getHeaderAtStart(document.getText())
-
-      // If found header for current language
-      // and a header is present at top of document
-      if (languageHeader && currentHeader) {
-        textEditor.edit(editor =>
-          replaceHeader(editor, currentHeader, languageHeader))
-          .then(applied => {
-            ignoreNextSave.add(document)
-            return document.save()
-          })
-          .then(() => {
-            ignoreNextSave.delete(document)
-          }, err => { })
-      }
-    }
-  }, null, subscriptions)
+    return currentHeader && isSupportedLanguage(document.languageId)
+      ? [replaceHeader(currentHeader, document.languageId)]
+      : []
+  }
 }
 
+/**
+ * Called by VSCode on extension activation.
+ * Registers header insertion command and formatting provider.
+ */
+export const activate = (context: vscode.ExtensionContext) => {
+  context.subscriptions.push(
+    vscode.commands
+      .registerTextEditorCommand('kube.insertHeader', insertHeaderHandler),
 
-export function activate(context: vscode.ExtensionContext) {
-  let disposable = vscode.commands
-    .registerTextEditorCommand('kube.insertHeader', insertHeaderHandler)
-
-  context.subscriptions.push(disposable)
-  startHeaderUpdateOnSaveWatcher(context.subscriptions)
-}
-
-export function deactivate() {
+    vscode.languages
+      .registerDocumentFormattingEditProvider('*', formattingEditProvider)
+  )
 }
