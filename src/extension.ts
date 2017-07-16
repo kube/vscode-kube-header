@@ -10,7 +10,7 @@
 
 import * as vscode from 'vscode'
 import { WorkspaceEdit, TextEdit, Position, Range } from 'vscode'
-import { isSupportedLanguage, SupportedLanguage, extractHeader, getHeader } from './header'
+import { isSupportedLanguage, SupportedLanguage, supportedLanguages, extractHeader, getHeader } from './header'
 
 /**
  * Returns the number of lines of a header.
@@ -83,6 +83,6 @@ export const activate = (context: vscode.ExtensionContext) => {
       .registerTextEditorCommand('kube.insertHeader', insertHeaderHandler),
 
     vscode.languages
-      .registerDocumentFormattingEditProvider('*', formattingEditProvider)
+      .registerDocumentFormattingEditProvider(supportedLanguages, formattingEditProvider)
   )
 }

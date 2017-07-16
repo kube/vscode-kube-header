@@ -121,6 +121,8 @@ const languageHeaders = {
 
 export type SupportedLanguage = keyof typeof languageHeaders
 
+export const supportedLanguages = Object.keys(languageHeaders) as SupportedLanguage[]
+
 /**
  * Check if language is supported
  */
