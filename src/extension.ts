@@ -10,7 +10,7 @@
 
 import * as vscode from 'vscode'
 import { WorkspaceEdit, TextEdit, Position, Range } from 'vscode'
-import { isSupportedLanguage, SupportedLanguage, supportedLanguages, extractHeader, getHeader } from './header'
+import { isSupportedLanguage, SupportedLanguage, extractHeader, getHeader } from './header'
 
 /**
  * Returns the number of lines of a header.
@@ -38,20 +38,26 @@ const replaceHeader = (currentHeader: string, language: SupportedLanguage) =>
   )
 
 /**
+ * Helper to apply TextEdits to Document
+ */
+const applyTextEdits = (document: vscode.TextDocument, textEdits: TextEdit[]) => {
+  const workspaceEdit = new WorkspaceEdit()
+  workspaceEdit.set(document.uri, textEdits)
+  vscode.workspace.applyEdit(workspaceEdit)
+}
+
+/**
  * Header Insertion Command Handler
  */
 const insertHeaderHandler = ({ document }: vscode.TextEditor) => {
   if (isSupportedLanguage(document.languageId)) {
     const currentHeader = extractHeader(document.getText())
-    const workspaceEdit = new WorkspaceEdit()
 
-    workspaceEdit.set(document.uri, [
+    applyTextEdits(document, [
       currentHeader
         ? replaceHeader(currentHeader, document.languageId)
         : insertHeader(document.languageId)
     ])
-
-    vscode.workspace.applyEdit(workspaceEdit)
   }
   else
     vscode.window.showInformationMessage(
@@ -60,17 +66,14 @@ const insertHeaderHandler = ({ document }: vscode.TextEditor) => {
 }
 
 /**
- * Header Formatting Provider.
- * Fixes header in case broken by previous formatters.
+ * Returns TextEdits to perform to fix a potential header
  */
-const formattingEditProvider: vscode.DocumentFormattingEditProvider = {
-  provideDocumentFormattingEdits(document) {
-    const currentHeader = extractHeader(document.getText())
+const updateDocumentHeader = (document: vscode.TextDocument) => {
+  const currentHeader = extractHeader(document.getText())
 
-    return currentHeader && isSupportedLanguage(document.languageId)
-      ? [replaceHeader(currentHeader, document.languageId)]
-      : []
-  }
+  return currentHeader && isSupportedLanguage(document.languageId)
+    ? [replaceHeader(currentHeader, document.languageId)]
+    : []
 }
 
 /**
@@ -82,7 +85,11 @@ export const activate = (context: vscode.ExtensionContext) => {
     vscode.commands
       .registerTextEditorCommand('kube.insertHeader', insertHeaderHandler),
 
-    vscode.languages
-      .registerDocumentFormattingEditProvider(supportedLanguages, formattingEditProvider)
+    vscode.workspace
+      .onWillSaveTextDocument(event =>
+        applyTextEdits(event.document,
+          updateDocumentHeader(event.document)
+        )
+      )
   )
 }
