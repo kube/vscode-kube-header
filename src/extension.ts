@@ -47,22 +47,14 @@ const applyTextEdits = (document: vscode.TextDocument, textEdits: TextEdit[]) =>
 }
 
 /**
- * Header Insertion Command Handler
+ * Returns TextEdits to perform to insert an header
  */
-const insertHeaderHandler = ({ document }: vscode.TextEditor) => {
-  if (isSupportedLanguage(document.languageId)) {
-    const currentHeader = extractHeader(document.getText())
+const insertDocumentHeader = (document: vscode.TextDocument) => {
+  const currentHeader = extractHeader(document.getText())
 
-    applyTextEdits(document, [
-      currentHeader
-        ? replaceHeader(currentHeader, document.languageId)
-        : insertHeader(document.languageId)
-    ])
-  }
-  else
-    vscode.window.showInformationMessage(
-      `No header found for language ${document.languageId}`
-    )
+  return !currentHeader && isSupportedLanguage(document.languageId)
+    ? [insertHeader(document.languageId)]
+    : updateDocumentHeader(document)
 }
 
 /**
@@ -83,7 +75,11 @@ const updateDocumentHeader = (document: vscode.TextDocument) => {
 export const activate = (context: vscode.ExtensionContext) => {
   context.subscriptions.push(
     vscode.commands
-      .registerTextEditorCommand('kube.insertHeader', insertHeaderHandler),
+      .registerTextEditorCommand('kube.insertHeader', editor =>
+        applyTextEdits(editor.document,
+          insertDocumentHeader(editor.document)
+        )
+      ),
 
     vscode.workspace
       .onWillSaveTextDocument(event =>
