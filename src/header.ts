@@ -86,51 +86,9 @@ const percentHeader =
 
 `
 
-export type SupportedLanguage = keyof Headers
+export type SupportedLanguage = keyof typeof headers
 
-export type Headers = {
-  'c': string
-  'coffeescript': string
-  'cpp': string
-  'css': string
-  'dockerfile': string
-  'erlang': string
-  'fsharp': string
-  'go': string
-  'groovy': string
-  'haskell': string
-  'ini': string
-  'jade': string
-  'java': string
-  'javascript': string
-  'javascriptreact': string
-  'latex': string
-  'less': string
-  'lua': string
-  'makefile': string
-  'matlab': string
-  'objective-c': string
-  'ocaml': string
-  'perl': string
-  'perl6': string
-  'php': string
-  'plaintext': string
-  'powershell': string
-  'python': string
-  'r': string
-  'ruby': string
-  'rust': string
-  'scss': string
-  'shellscript': string
-  'sql': string
-  'swift': string
-  'typescript': string
-  'typescriptreact': string
-  'xsl': string
-  'yaml': string
-}
-
-const headers: Headers = {
+const headers = {
   'c': slashHeader,
   'coffeescript': hashHeader,
   'cpp': slashHeader,
