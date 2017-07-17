@@ -83,6 +83,7 @@ const languageHeaders = {
   'cpp': headers.slash,
   'css': headers.slash,
   'dockerfile': headers.hash,
+  'elm': headers.dash,
   'erlang': headers.percent,
   'fsharp': headers.parens,
   'go': headers.slash,
