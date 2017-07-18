@@ -83,9 +83,9 @@ export const activate = (context: vscode.ExtensionContext) => {
 
     vscode.workspace
       .onWillSaveTextDocument(event =>
-        applyTextEdits(event.document,
+        event.waitUntil(Promise.resolve(
           updateDocumentHeader(event.document)
-        )
+        ))
       )
   )
 }
